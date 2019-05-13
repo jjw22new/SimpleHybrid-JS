@@ -1,9 +1,14 @@
+var webData = {};
+var appData = {};
+
 document.addEventListener("DOMContentLoaded", function() {
     location.href = 'SH://init';
 });
 
-var webData = {};
-var appData = {};
+function shInitCallBack(webData, appData) {
+    webData = JSON.stringify(webData);
+    appData = JSON.stringify(appData);
+}
 
 //SH
 var SH = {
@@ -79,7 +84,6 @@ var SH = {
                 }
             }
         }
-        
         return type;
     }
 }
