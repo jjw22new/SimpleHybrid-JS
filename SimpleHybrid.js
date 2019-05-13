@@ -1,35 +1,50 @@
+document.addEventListener("DOMContentLoaded", function() {
+    location.href = 'SH://init';
+});
+
+var webData = {};
+var appData = {};
+
+//SH
 var SH = {
-    Data = {
-        View : function(name) {
-            location.href = "SH://data.view?name=" + name;
+    data : {
+        web : {
+            remove : function(name) {
+                webData[name].remove();
+                location.href = 'SH://data.web.remove?name=' + name;
+            },
+            clear : function() {
+                webData.clear();
+                location.href = 'SH://data.web.clear';
+            }
         },
-        View : function(name, data) {
-            location.href = "SH://data.view?name=" + name + "&data=" + data;
+        web : function(name) {
+            return webData[name];
         },
-        All : function(name) {
-            location.href = "SH://data.all?name=" + name;
+        web : function(name, value) {
+            webData[name] = value;
+            location.href = 'SH://data.web?name=' + name + '&value=' + value;
         },
-        All : function(name, data) {
-            location.href = "SH://data.all?name=" + name + "&data=" + data;
+        app : {
+            remove : function(name) {
+                appData[name].remove();
+                location.href = 'SH://data.app.remove?name=' + name;
+            },
+            clear : function() {
+                appData.clear();
+                location.href = 'SH://data.app.clear';
+            }
         },
-        Device : function(name) {
-            location.href = "SH://data.device?name=" + name;
+        app : function(name) {
+            return appData[name];
         },
-        Device : function(name, data) {
-            location.href = "SH://data.device?name=" + name + "&data=" + data;
+        app : function(name, value) {
+            appData[name] = value;
+            location.href = 'SH://data.app?name=' + name + '&value=' + value;
         }
     },
-    
-    /*
-    Run : function(viewName) {
-        location.href = "SH://run?viewName=" + viewName;
-    },
-    Run : function(viewName, param) {
-        location.href = "SH://run?viewName=" + viewName + "&param=" + param;
-    }
-    */
 
-    DeviceType : function() {
+    deviceType : function() {
         var agent = navigator.userAgent.toLowerCase();
 	
         var type = "PCWeb";
