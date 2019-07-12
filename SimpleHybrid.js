@@ -2,12 +2,23 @@ var webData = {};
 var appData = {};
 
 document.addEventListener("DOMContentLoaded", function() {
-    location.href = 'SH://init';
+    shInit();
 });
 
-function shInitCallBack(webData, appData) {
-    webData = JSON.stringify(webData);
-    appData = JSON.stringify(appData);
+function shInit() {
+    //webData Sync
+    webData = localStorage.getItem("webData");
+
+    //appData Sync
+    if(SH.deviceType() == "AndroidApp") {
+        SHAndroid.init(name);
+    } else if(SH.deviceType() == "iOSApp") {
+        webkit.messageHanlders.SHiOSInit.postMessage(name);
+    }
+}
+
+function shInitCallBack(appData) {
+    appData = JSON.parse(appData);
 }
 
 //SH
@@ -16,11 +27,11 @@ var SH = {
         web : {
             remove : function(name) {
                 webData[name].remove();
-                location.href = 'SH://data.web.remove?name=' + name;
+                localStorage.setItem("webData", webData);
             },
             clear : function() {
                 webData.clear();
-                location.href = 'SH://data.web.clear';
+                localStorage.setItem("webData", webData);
             }
         },
         web : function(name) {
@@ -28,24 +39,55 @@ var SH = {
         },
         web : function(name, value) {
             webData[name] = value;
-            location.href = 'SH://data.web?name=' + name + '&value=' + value;
+            localStorage.setItem("webData", webData);
         },
         app : {
             remove : function(name) {
-                appData[name].remove();
-                location.href = 'SH://data.app.remove?name=' + name;
+                if(SH.deviceType() == "AndroidApp" || SH.deviceType() == "iOSApp") {
+                    appData[name].remove();
+
+                    if(SH.deviceType() == "AndroidApp") {
+                        SHAndroid.appDataToApp(JSON.stringify(appData));
+                    } else if(SH.deviceType() == "iOSApp") {
+                        webkit.messageHanlders.appDataToApp.postMessage(JSON.stringify(appData));
+                    }
+                } else {
+                    console.log("This is not app, SH.app.remove() function is ignored")
+                }
             },
             clear : function() {
-                appData.clear();
-                location.href = 'SH://data.app.clear';
+                if(SH.deviceType() == "AndroidApp" || SH.deviceType() == "iOSApp") {
+                    appData.clear();
+
+                    if(SH.deviceType() == "AndroidApp") {
+                        SHAndroid.appDataToApp(JSON.stringify(appData));
+                    } else if(SH.deviceType() == "iOSApp") {
+                        webkit.messageHanlders.appDataToApp.postMessage(JSON.stringify(appData));
+                    }
+                } else {
+                    console.log("This is not app, SH.app.clear() function is ignored");
+                }
             }
         },
         app : function(name) {
-            return appData[name];
+            if(SH.deviceType() == "AndroidApp" || SH.deviceType() == "iOSApp") {
+                return appData[name];
+            } else {
+                console.log("This is not app, SH.app() function is ignored");
+            }
         },
         app : function(name, value) {
-            appData[name] = value;
-            location.href = 'SH://data.app?name=' + name + '&value=' + value;
+            if(SH.deviceType() == "AndroidApp" || SH.deviceType() == "iOSApp") {
+                appData[name] = value;
+                
+                if(SH.deviceType() == "AndroidApp") {
+                    SHAndroid.appDataToApp(JSON.stringify(appData));
+                } else if(SH.deviceType() == "iOSApp") {
+                    webkit.messageHanlders.appDataToApp.postMessage(JSON.stringify(appData));
+                }
+            } else {
+                console.log("This is not app, SH.app() function is ignored");
+            }
         }
     },
 
