@@ -11,28 +11,26 @@ function shInit() {
 
     //appData Sync
     if(SH.deviceType() == "AndroidApp") {
-        SHAndroid.init(name);
+        SHAndroid.init();
     } else if(SH.deviceType() == "iOSApp") {
-        webkit.messageHanlders.SHiOSInit.postMessage(name);
+        webkit.messageHanlders.SHiOSInit.postMessage();
     }
 }
 
-function shInitCallBack(appData) {
-    appData = JSON.parse(appData);
+function shInitCallBack(receiveAppData) {
+    appData = JSON.parse(receiveAppData);
 }
 
 //SH
 var SH = {
     data : {
-        web : {
-            remove : function(name) {
-                webData[name].remove();
-                localStorage.setItem("webData", webData);
-            },
-            clear : function() {
-                webData.clear();
-                localStorage.setItem("webData", webData);
-            }
+        removeWeb : function(name) {
+            webData[name].remove();
+            localStorage.setItem("webData", webData);
+        },
+        clearWeb : function() {
+            webData.clear();
+            localStorage.setItem("webData", webData);
         },
         web : function(name) {
             return webData[name];
@@ -41,49 +39,44 @@ var SH = {
             webData[name] = value;
             localStorage.setItem("webData", webData);
         },
-        app : {
-            remove : function(name) {
-                if(SH.deviceType() == "AndroidApp" || SH.deviceType() == "iOSApp") {
-                    appData[name].remove();
-
-                    if(SH.deviceType() == "AndroidApp") {
-                        SHAndroid.appDataToApp(JSON.stringify(appData));
-                    } else if(SH.deviceType() == "iOSApp") {
-                        webkit.messageHanlders.appDataToApp.postMessage(JSON.stringify(appData));
-                    }
-                } else {
-                    console.log("This is not app, SH.app.remove() function is ignored")
-                }
-            },
-            clear : function() {
-                if(SH.deviceType() == "AndroidApp" || SH.deviceType() == "iOSApp") {
-                    appData.clear();
-
-                    if(SH.deviceType() == "AndroidApp") {
-                        SHAndroid.appDataToApp(JSON.stringify(appData));
-                    } else if(SH.deviceType() == "iOSApp") {
-                        webkit.messageHanlders.appDataToApp.postMessage(JSON.stringify(appData));
-                    }
-                } else {
-                    console.log("This is not app, SH.app.clear() function is ignored");
-                }
-            }
-        },
-        app : function(name) {
+        removeApp : function(name) {
             if(SH.deviceType() == "AndroidApp" || SH.deviceType() == "iOSApp") {
-                return appData[name];
-            } else {
-                console.log("This is not app, SH.app() function is ignored");
-            }
-        },
-        app : function(name, value) {
-            if(SH.deviceType() == "AndroidApp" || SH.deviceType() == "iOSApp") {
-                appData[name] = value;
-                
+                appData[name].remove();
+
                 if(SH.deviceType() == "AndroidApp") {
                     SHAndroid.appDataToApp(JSON.stringify(appData));
                 } else if(SH.deviceType() == "iOSApp") {
                     webkit.messageHanlders.appDataToApp.postMessage(JSON.stringify(appData));
+                }
+            } else {
+                console.log("This is not app, SH.app.remove() function is ignored")
+            }
+        },
+        clearApp : function() {
+            if(SH.deviceType() == "AndroidApp" || SH.deviceType() == "iOSApp") {
+                appData.clear();
+
+                if(SH.deviceType() == "AndroidApp") {
+                    SHAndroid.appDataToApp(JSON.stringify(appData));
+                } else if(SH.deviceType() == "iOSApp") {
+                    webkit.messageHanlders.appDataToApp.postMessage(JSON.stringify(appData));
+                }
+            } else {
+                console.log("This is not app, SH.app.clear() function is ignored");
+            }
+        },
+        app : function(name, value) {
+            if(SH.deviceType() == "AndroidApp" || SH.deviceType() == "iOSApp") {
+                if(value == undefined) {
+                    return appData[name];
+                } else {
+                    appData[name] = value;
+                
+                    if(SH.deviceType() == "AndroidApp") {
+                        SHAndroid.appDataToApp(JSON.stringify(appData));
+                    } else if(SH.deviceType() == "iOSApp") {
+                        webkit.messageHanlders.appDataToApp.postMessage(JSON.stringify(appData));
+                    }
                 }
             } else {
                 console.log("This is not app, SH.app() function is ignored");
@@ -105,7 +98,7 @@ var SH = {
                 "sonyericsson",
                 ];
         
-        if(agent.indexOf('SimpleHybrid') != -1){
+        if(agent.indexOf('simplehybrid') != -1){
             if(agent.indexOf('android') != -1) {
                 type = "AndroidApp";
             } else if((agent.indexOf('iphone') != -1) || (agent.indexOf('ipad') != -1) || (agent.indexOf('ipod') != -1)) {
