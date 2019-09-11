@@ -14,6 +14,7 @@ function shInit() {
         SHAndroid.init();
     } else if(SH.deviceType() == "iOSApp") {
         webkit.messageHanlders.SHiOSInit.postMessage();
+        //location.href = "SH://init";
     }
 }
 
